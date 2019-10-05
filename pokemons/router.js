@@ -8,7 +8,14 @@ function isSufficientParam(v) {
 }
 
 // GET /pokemons -> list all pokemons http://localhost:3000/pokemons
-router.get('/pokemons', (req, res) => res.send(pokemons))
+router.get('/pokemons', (req, res) => {
+    pokemon.getPokemon().then((result) => {
+        res.send(result)
+    }).catch((err) => {
+        console.error(err)
+        res.sendStatus(500)
+    })
+})
 
 // POST /pokemons -> add pokemon to list
 router.post('/pokemons', (req, res) => {
@@ -19,12 +26,18 @@ router.post('/pokemons', (req, res) => {
         return
     }
 
-    let success = pokemon.savePokemon(req.body.name, req.body.type)
-    if (!success) {
+    // let success = pokemon.savePokemon(req.body.name, req.body.type)
+    // if (!success) {
+    //     res.status(400).send({ error: 'Create pokemon is unsuccessfully:' })
+    //     return
+    // }
+    // res.sendStatus(201)
+    pokemon.savePokemon(req.body.name,req.body.type).then((result) => {
+        res.sendStatus(201)
+    }).catch((err) => {
+        console/error(err)
         res.status(400).send({ error: 'Create pokemon is unsuccessfully:' })
-        return
-    }
-    res.sendStatus(201)
+    })
 })
 
 // GET http://localhost:3000/pokemon/1
@@ -34,13 +47,18 @@ router.get('/pokemon/:id', (req, res) => {
         return
     }
 
-    let id = req.params.id
-    let p = pokemon.getPokemon(id)
-    if (p === undefined || p === null) {
-        res.status(400).send({ error: 'The pokemon could not be found' })
-        return
-    }
+    // let id = req.params.id
+    // let p = pokemon.getPokemon(id)
+    // if (p === undefined || p === null) {
+    //     res.status(400).send({ error: 'The pokemon could not be found' })
+    //     return
 
+    pokemon.getOnePokemon(req.param.id).then((result) => {
+        res.send(result)
+    }).catch((err) => {
+        console.error(err)
+        res.sendStatus(500)
+    })
     res.send(p)
 })
 
